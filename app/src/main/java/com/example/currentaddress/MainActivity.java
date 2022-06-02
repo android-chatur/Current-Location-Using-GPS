@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,16 +24,22 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     ProgressBar progressBar;
-    TextView textLatLong, address, postcode, locaity, state, district, country,fulladdress;
+    TextView textLatLong, address, postcode, locaity, state, district, country,fulladdress,date_time;
     ResultReceiver resultReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         resultReceiver = new AddressResultReceiver(new Handler());
 
         progressBar = findViewById(R.id.progress_circular);
@@ -43,8 +50,13 @@ public class MainActivity extends AppCompatActivity {
         postcode = findViewById(R.id.textcode);
         country = findViewById(R.id.textcountry);
         fulladdress = findViewById(R.id.fulladdress);
+        date_time = findViewById(R.id.date_time);
         district = findViewById(R.id.textdistrict);
         state = findViewById(R.id.textstate);
+
+
+
+
 
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults.length > 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocation();
+
             } else {
                 Toast.makeText(this, "Permission is denied!", Toast.LENGTH_SHORT).show();
             }
@@ -129,6 +142,12 @@ public class MainActivity extends AppCompatActivity {
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
             if (resultCode == Constants.SUCCESS_RESULT) {
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
+
+
+                date_time.setText( currentDate +" & "+currentTime);
                 address.setText(resultData.getString(Constants.ADDRESS));
                 locaity.setText(resultData.getString(Constants.LOCAITY));
                 state.setText(resultData.getString(Constants.STATE));
